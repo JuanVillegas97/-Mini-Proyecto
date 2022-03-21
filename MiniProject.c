@@ -35,6 +35,10 @@ int main(int argc, char const *argv[])
     filePointer = fopen("Recipes.txt", "r");
     while (fgets(buffer, bufferLength, filePointer))
     {
+        if (strcmp(buffer, "\n") == 0)
+        {
+            lineNum = -1;
+        }
         switch (lineNum)
         {
         case 0:
@@ -53,8 +57,8 @@ int main(int argc, char const *argv[])
             break;
         case 5:
             Recipe.ingredients[ingredientsNum].quantity = atoi((strchr(buffer, ':') + 1));
+            strcpy(Recipe.ingredients[ingredientsNum].line, strtok(buffer, ":"));
             ingredientsNum++;
-            printf("%s", buffer);
             break;
         default:
             break;
@@ -63,18 +67,16 @@ int main(int argc, char const *argv[])
         if (lineNum == 6)
         {
             lineNum = 5;
-            if ((buffer[0] == '#' || buffer[0] == '\n'))
-            {
-                lineNum = 0;
-            }
         }
     }
     printf("%s", Recipe.name.line);
     printf("%s", Recipe.description.line);
     printf("%s", Recipe.categories.line);
     printf("%s", Recipe.profile.line);
-    printf("%d\n", Recipe.ingredients[0].quantity);
-    printf("%d\n", Recipe.ingredients[1].quantity);
+    for (int i = 0; i < ingredientsNum; i++)
+    {
+        printf("%s %d\n", Recipe.ingredients[i].line, Recipe.ingredients[i].quantity);
+    }
 
     fclose(filePointer);
 }
