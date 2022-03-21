@@ -1,20 +1,22 @@
+// Juan Eduardo VIllegas Rios A00826615
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+
 typedef struct
 {
     char line[100];
     int quantity;
-} String;
+} Ingredients;
 
 typedef struct
 {
-    String name;
-    String description;
-    String categories;
-    String profile;
-    String ingredients[10];
+    char name[100];
+    char description[100];
+    char categories[100];
+    char profile[100];
+    Ingredients ingredients[10];
 } Recipes;
 
 FILE *ptrFile;
@@ -26,13 +28,7 @@ int main(int argc, char const *argv[])
     Recipes Recipe[3];
     int bufferLength = 100;
     char buffer[bufferLength];
-    bool gate = false;
-    int lineNum = 0;
-    int ingredientsNum = 0;
-    int ingredientsQuantity = 0;
-    int a = 0;
-    int recipeNum = 0;
-
+    int lineNum = 0, ingredientsNum = 0, recipeNum = 0, ingredientsQuantity = 0;
     filePointer = fopen("Recipes.txt", "r");
     while (fgets(buffer, bufferLength, filePointer))
     {
@@ -45,16 +41,16 @@ int main(int argc, char const *argv[])
         switch (lineNum)
         {
         case 0:
-            strcpy(Recipe[recipeNum].name.line, (strchr(buffer, ':') + 1));
+            strcpy(Recipe[recipeNum].name, (strchr(buffer, ':') + 1));
             break;
         case 1:
-            strcpy(Recipe[recipeNum].description.line, (strchr(buffer, ':') + 1));
+            strcpy(Recipe[recipeNum].description, (strchr(buffer, ':') + 1));
             break;
         case 2:
-            strcpy(Recipe[recipeNum].categories.line, (strchr(buffer, ':') + 1));
+            strcpy(Recipe[recipeNum].categories, (strchr(buffer, ':') + 1));
             break;
         case 3:
-            strcpy(Recipe[recipeNum].profile.line, (strchr(buffer, ':') + 1));
+            strcpy(Recipe[recipeNum].profile, (strchr(buffer, ':') + 1));
             break;
         case 4:
             break;
@@ -72,16 +68,19 @@ int main(int argc, char const *argv[])
             lineNum = 5;
         }
     }
+
     for (size_t i = 0; i <= recipeNum; i++)
     {
-        printf("%s", Recipe[i].name.line);
-        printf("%s", Recipe[i].description.line);
-        printf("%s", Recipe[i].categories.line);
-        printf("%s", Recipe[i].profile.line);
+        printf("Recipe:%s", Recipe[i].name);
+        printf("Description:%s", Recipe[i].description);
+        printf("Categories:%s", Recipe[i].categories);
+        printf("Profile:%s", Recipe[i].profile);
+        printf("Ingredients:");
         for (int j = 0; j <= ingredientsNum; j++)
         {
-            printf("%s %d\n", Recipe[i].ingredients[j].line, Recipe[i].ingredients[j].quantity);
+            printf("%s:%d\n", Recipe[i].ingredients[j].line, Recipe[i].ingredients[j].quantity);
         }
+        printf("\n");
     }
 
     fclose(filePointer);
