@@ -5,7 +5,7 @@
 typedef struct
 {
     char line[100];
-    int quantity[100];
+    int quantity;
 } String;
 
 typedef struct
@@ -29,6 +29,8 @@ int main(int argc, char const *argv[])
     bool gate = false;
     int lineNum = 0;
     int ingredientsNum = 0;
+    int ingredientsQuantity = 0;
+    int a = 0;
 
     filePointer = fopen("Recipes.txt", "r");
     while (fgets(buffer, bufferLength, filePointer))
@@ -50,21 +52,29 @@ int main(int argc, char const *argv[])
         case 4:
             break;
         case 5:
-            // strcpy(Recipe.ingredients[ingredientsNum]->quantity, (strchr(buffer, ':') + 1));
+            Recipe.ingredients[ingredientsNum].quantity = atoi((strchr(buffer, ':') + 1));
             ingredientsNum++;
+            printf("%s", buffer);
+            break;
         default:
             break;
         }
         lineNum++;
-        if (lineNum == 6 && buffer[0] == '\n')
+        if (lineNum == 6)
         {
             lineNum = 5;
+            if ((buffer[0] == '#' || buffer[0] == '\n'))
+            {
+                lineNum = 0;
+            }
         }
     }
     printf("%s", Recipe.name.line);
     printf("%s", Recipe.description.line);
     printf("%s", Recipe.categories.line);
     printf("%s", Recipe.profile.line);
+    printf("%d\n", Recipe.ingredients[0].quantity);
+    printf("%d\n", Recipe.ingredients[1].quantity);
 
     fclose(filePointer);
 }
