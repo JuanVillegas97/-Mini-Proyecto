@@ -1,6 +1,7 @@
-// Juan Eduardo VIllegas Rios A00826615
-// Pablo Vera Terán A01730223
-
+/**
+Juan Eduardo VIllegas Rios A00826615
+Pablo Vera Terán A01730223
+**/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -68,19 +69,52 @@ void readFileInfo(FILE *filePointer, Recipes* RecipeArray)
     }
 }
 
-bool linearSearch(int arr[], int n, int x)
+bool linearSearch(char** arr, int n, char* x)
 {
+    //printf("n = %d\n", n);
     int i;
     for (i = 0; i < n; i++)
-        if (arr[i] == x)
+    {
+        //printf("comparing: %s to %s\n", arr[i], x);
+        if (strcmp(arr[i], x) == 0)
             return true;
+    }
     return false;
 }
 
-void getAllIngredients(char** IngredientArray, Recipes* RecipeArray)
+int getAllIngredients(char** IngredientArray, Recipes* RecipeArray)
 {
-    // printf("ánimo\n");
+    IngredientArray = (char**)malloc(sizeof(char) * MAX_INGREDIENTS*MAX_RECIPE );
+    //IngredientArray[0] = (char*)malloc(sizeof(char)*100);
+    int tempIndex = 0;
+    for (size_t i = 0; i < MAX_RECIPE; i++)
+    {
+        for (size_t j = 0; j < RecipeArray[i].ingredientsAmount; j++)
+        {
+            char* tempIngredient = RecipeArray[i].ingredients[j].line;
+            //printf("tempIng: %s\n", tempIngredient);
+            if ( !linearSearch(IngredientArray, tempIndex, tempIngredient) )
+            {
+                IngredientArray[tempIndex] = (char*)malloc(sizeof(char)*100);
+                IngredientArray[tempIndex] = tempIngredient;
+                //printf("added %s to IngredientArray at index %d\n", tempIngredient, tempIndex);
+                tempIndex++;
+            }else{
+                //printf("duplicated ingredient, not added\n");
+            }
+        }        
+    }
 
+    int totalAmountIngredients = tempIndex;
+
+    for (size_t i = 0; i < totalAmountIngredients; i++)
+    {
+        printf("%s\n", IngredientArray[i]);
+    }
+    printf("\n");
+
+    return totalAmountIngredients;
+    
 }
 
 void tempPrint(Recipes* RecipeArray)
@@ -105,11 +139,12 @@ void tempPrint(Recipes* RecipeArray)
 int main(int argc, char const *argv[])
 {
     FILE *filePointer;
-    Recipes RecipeArray[3];
-    char* IngredientArray[20];
+    Recipes RecipeArray[MAX_RECIPE];
+    char IngredientArray[MAX_INGREDIENTS*MAX_RECIPE][100];
+    char** ptr = NULL;
     
     readFileInfo(filePointer, RecipeArray);
-    getAllIngredients(IngredientArray, RecipeArray);
+    int totalAmountIngredients = getAllIngredients(ptr, RecipeArray);
     tempPrint(RecipeArray);
 
 
