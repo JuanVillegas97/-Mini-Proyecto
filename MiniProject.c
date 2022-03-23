@@ -82,10 +82,27 @@ bool linearSearch(char** arr, int n, char* x)
     return false;
 }
 
+int linearSearch2(Ingredients* arr, int n, char* x)
+{
+    //printf("#ings in this rec = %d\n", n);
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        //printf("comparing: %s to %s\n", arr[i].line, x);
+        if (strcmp(arr[i].line, x) == 0)
+        {
+            //printf("i: %d\n", i);
+            return i;
+        }
+    }
+    return -1;
+}
+
 int getAllIngredients(char** IngredientArray, Recipes* RecipeArray)
 {
-    IngredientArray = (char**)malloc(sizeof(char) * MAX_INGREDIENTS*MAX_RECIPE );
-    //IngredientArray[0] = (char*)malloc(sizeof(char)*100);
+    // IngredientArray = (char**)malloc(sizeof(char) * MAX_INGREDIENTS*MAX_RECIPE );
+    // printf("ing array at: %p\n", IngredientArray);
+    // IngredientArray[0] = (char*)malloc(sizeof(char)*100);
     int tempIndex = 0;
     for (size_t i = 0; i < MAX_RECIPE; i++)
     {
@@ -96,7 +113,8 @@ int getAllIngredients(char** IngredientArray, Recipes* RecipeArray)
             if ( !linearSearch(IngredientArray, tempIndex, tempIngredient) )
             {
                 IngredientArray[tempIndex] = (char*)malloc(sizeof(char)*100);
-                IngredientArray[tempIndex] = tempIngredient;
+                strcpy(IngredientArray[tempIndex], tempIngredient);
+                //IngredientArray[tempIndex] = tempIngredient;
                 //printf("added %s to IngredientArray at index %d\n", tempIngredient, tempIndex);
                 tempIndex++;
             }else{
@@ -107,17 +125,56 @@ int getAllIngredients(char** IngredientArray, Recipes* RecipeArray)
 
     int totalAmountIngredients = tempIndex;
 
-    for (size_t i = 0; i < totalAmountIngredients; i++)
-    {
-        printf("%s\n", IngredientArray[i]);
-    }
-    printf("\n");
+    // for (size_t i = 0; i < totalAmountIngredients; i++)
+    // {
+    //     printf("%s\n", IngredientArray[i]);
+    // }
+    // printf("\n");
 
     return totalAmountIngredients;
     
 }
 
-void tempPrint(Recipes* RecipeArray)
+void printFormulaMatrix(Recipes* RecipeArray, char** IngredientArray, int n)
+{
+    printf("\t\t");
+    for (size_t i = 0; i < MAX_RECIPE; i++)
+    {
+        printf("%s\t", RecipeArray[i].name);
+    }
+    printf("\n");
+    
+    for (size_t rowIndex = 0; rowIndex < n; rowIndex++)
+    {
+        //printf("\nhere");
+        for (int colIndex = -1; colIndex < MAX_RECIPE; colIndex++)
+        {
+            //printf("row: %d, col: %d\n", rowIndex, colIndex);
+            if (colIndex == -1)
+            {
+                //printf("ing array at: %p\n", IngredientArray);
+                printf("%s     \t", IngredientArray[rowIndex]);
+            }else
+            {
+                //printf("recc array: %p\n", RecipeArray);
+                int ingredientFound = linearSearch2( RecipeArray[colIndex].ingredients, RecipeArray[colIndex].ingredientsAmount, IngredientArray[rowIndex] );
+                if( ingredientFound != -1 )
+                {
+                    int amount = RecipeArray[colIndex].ingredients[ingredientFound].quantity;
+                    printf("%d\t\t", amount);
+                }else
+                {
+                    printf("0\t\t");
+                }             
+            }
+            //printf("column ends\n");
+        }    
+        //printf("row ends\n");
+        printf("\n");
+    }
+}
+
+void asInputPrint(Recipes* RecipeArray)
 {
     for (size_t i = 0; i < MAX_RECIPE; i++)
     {
@@ -140,12 +197,19 @@ int main(int argc, char const *argv[])
 {
     FILE *filePointer;
     Recipes RecipeArray[MAX_RECIPE];
-    char IngredientArray[MAX_INGREDIENTS*MAX_RECIPE][100];
-    char** ptr = NULL;
-    
+    char** IngredientArray = NULL;
+    // printf("ing array: %p\n", IngredientArray);
+    // printf("rec array: %p\n", RecipeArray);
+    IngredientArray = (char**)malloc(sizeof(char) * MAX_INGREDIENTS*MAX_RECIPE );
+    // printf("ing array: %p\n", IngredientArray);
+
     readFileInfo(filePointer, RecipeArray);
-    int totalAmountIngredients = getAllIngredients(ptr, RecipeArray);
-    tempPrint(RecipeArray);
+    int totalAmountIngredients = getAllIngredients(IngredientArray, RecipeArray);
+    // printf("ing array at: %p\n", IngredientArray);
+    printFormulaMatrix(RecipeArray, IngredientArray, totalAmountIngredients);
+    
+
+    //asInputPrint(RecipeArray);
 
 
     fclose(filePointer);
