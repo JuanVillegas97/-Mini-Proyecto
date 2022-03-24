@@ -1,4 +1,5 @@
 // Juan Eduardo VIllegas Rios A00826615
+// Miguel Tanori Martinez
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
