@@ -3,6 +3,7 @@
 Juan Eduardo VIllegas Rios  A00826615
 Pablo Vera Terán            A01730223
 Miguel Tanori Martinez      A01282574
+Citlalli Rosario Alonzo Mateos A01275834
 **/
 
 #include <stdio.h>
