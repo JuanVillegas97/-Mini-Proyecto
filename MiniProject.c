@@ -1,5 +1,5 @@
 // Juan Eduardo VIllegas Rios A00826615
-// Popo
+// Citlalli Rosario Alonzo Mateos A01275834
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
