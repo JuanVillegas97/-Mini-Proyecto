@@ -1,11 +1,12 @@
 /**
-Juan Eduardo VIllegas Rios A00826615
+Juan Eduardo Villegas Rios A00826615
 Pablo Vera Terán A01730223
 **/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
 #define MAX_RECIPE 3
 #define MAX_INGREDIENTS 10
 
@@ -31,6 +32,11 @@ void readFileInfo(FILE *filePointer, Recipes* RecipeArray)
     char buffer[bufferLength];
     int lineNum = 0, ingredientsNum = 0, recipeNum = 0, ingredientsQuantity = 0;
     filePointer = fopen("Recipes.txt", "r");
+    if (filePointer == NULL)
+    {
+        return;
+    }
+    
     while (fgets(buffer, bufferLength, filePointer))
     {
         if (strcmp(buffer, "\n") == 0)
@@ -140,7 +146,7 @@ void printFormulaMatrix(Recipes* RecipeArray, char** IngredientArray, int n)
     printf("\t\t");
     for (size_t i = 0; i < MAX_RECIPE; i++)
     {
-        printf("%s\t", RecipeArray[i].name);
+        printf("%.8s\t", RecipeArray[i].name);
     }
     printf("\n");
     
@@ -172,6 +178,7 @@ void printFormulaMatrix(Recipes* RecipeArray, char** IngredientArray, int n)
         //printf("row ends\n");
         printf("\n");
     }
+    printf("\n");
 }
 
 void asInputPrint(Recipes* RecipeArray)
@@ -192,6 +199,84 @@ void asInputPrint(Recipes* RecipeArray)
     }
 }
 
+int getEuclideanDistance(Recipes* RecipeArray, int recipe1, int recipe2, char** IngredientArray, int n)
+{
+    float predistance = 0;    
+    for (size_t rowIndex = 0; rowIndex < n; rowIndex++)
+    {
+        int ingredientFound1 = linearSearch2( RecipeArray[recipe1].ingredients, RecipeArray[recipe1].ingredientsAmount, IngredientArray[rowIndex] );
+        int ingredientFound2 = linearSearch2( RecipeArray[recipe2].ingredients, RecipeArray[recipe2].ingredientsAmount, IngredientArray[rowIndex] );
+        //printf("ingf1: %d, ingf2: %d", ingredientFound1, ingredientFound2);
+        if( ingredientFound1 != -1 && ingredientFound2 != -1)
+        {
+            predistance += pow(RecipeArray[recipe1].ingredients[ingredientFound1].quantity - RecipeArray[recipe2].ingredients[ingredientFound2].quantity, 2);
+            //printf("predistance: %f\n", predistance);
+        }else if(ingredientFound1 != -1 && ingredientFound2 == -1)
+        {
+            predistance += pow(RecipeArray[recipe1].ingredients[ingredientFound1].quantity, 2);
+        }else if(ingredientFound1 == -1 && ingredientFound2 != -1)
+        {
+            predistance += pow(RecipeArray[recipe2].ingredients[ingredientFound2].quantity, 2);
+        }else
+        {
+            //zeros on both recipes
+        }
+    }
+    float distance = sqrt(predistance);
+    return (int)distance;
+}
+
+void printPairwise(Recipes* RecipeArray, char** IngredientArray, int n)
+{
+    printf("\t\t");
+    for (size_t i = 0; i < MAX_RECIPE; i++)
+    {
+        printf("%.8s\t", RecipeArray[i].name);
+    }
+    printf("\n");
+    for (int i = 0; i < MAX_RECIPE; i++)
+    {
+        for (int j = -1; j < MAX_RECIPE; j++)
+        {
+            if (j == -1)
+            {
+                printf("%.8s\t", RecipeArray[i].name);
+            }else if(i == j)
+            {
+                printf("0\t\t");
+            }else
+            {
+                printf("%d\t\t", getEuclideanDistance(RecipeArray, i, j, IngredientArray, n));
+            }
+            
+        }
+        printf("\n");
+    }
+}
+
+// void printEdge(Recipes* RecipeArray, char** IngredientArray, int n)
+// {
+//     printf("From\t\tTo\t\tDistance");
+    
+//     for (int i = 0; i < MAX_RECIPE; i++)
+//     {
+//         for (int j = 0; j < 3; j++)
+//         {
+//             if (j == 0)
+//             {
+//                 printf("%.8s\t", RecipeArray[i].name);
+//             }else if(j == 1)
+//             {
+//                 printf("0\t\t");
+//             }else
+//             {
+//                 printf("%d\t\t", getEuclideanDistance(RecipeArray, i, j, IngredientArray, n));
+//             }
+            
+//         }
+//         printf("\n");
+//     }
+// }
 
 int main(int argc, char const *argv[])
 {
@@ -207,10 +292,9 @@ int main(int argc, char const *argv[])
     int totalAmountIngredients = getAllIngredients(IngredientArray, RecipeArray);
     // printf("ing array at: %p\n", IngredientArray);
     printFormulaMatrix(RecipeArray, IngredientArray, totalAmountIngredients);
-    
-
+    //printf("%d", getEuclideanDistance(RecipeArray, 0, 2, IngredientArray, totalAmountIngredients));    
+    printPairwise(RecipeArray,IngredientArray, totalAmountIngredients);
     //asInputPrint(RecipeArray);
-
 
     fclose(filePointer);
 }
